@@ -3,5 +3,5 @@
     <string name="tab_text_1">Journal</string>
     <string name="tab_text_2">Stats</string>
     <string name="action_settings">Settings</string>
-    <string name="dateText">Test</string> />
+    <string name="dateText">01 Jan</string> />
 </resources>
