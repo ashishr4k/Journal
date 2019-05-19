@@ -3,6 +3,7 @@ package assignment2.ashishr.utas.edu.au.journal;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -80,10 +81,32 @@ public class JournalTable {
         }
     }
 
-    //a function for updating data
-    public static void update(SQLiteDatabase db, Entry j)
+    //a function which return the journal with specific journal ID
+    public static Entry selectByID(SQLiteDatabase db, int id)
     {
-        ContentValues values=new ContentValues();
+        Entry result = null;
+
+        Cursor c = db.query(TABLE_NAME, null, ENTRY_ID + "= ?",new String[]{""+id}, null, null, null);
+        //check for error
+        if (c != null)
+        {
+            //make sure the cursor is at the start of the list
+            c.moveToFirst();
+            result = createFromCursor(c);
+
+        }
+        return result;
+    }
+
+    public static void deleteById(SQLiteDatabase db, int id)
+    {
+        db.delete(JournalTable.TABLE_NAME,JournalTable.ENTRY_ID+"=?",new String[]{""+id});
+    }
+
+    //a function for updating data
+    public static void update(SQLiteDatabase db, Entry j, int id)
+    {
+        ContentValues values = new ContentValues();
         values.put(ENTRY_ID,j.getmEntryID());
         values.put(ENTRY_TITLE,j.getmEntryTitle());
         values.put(ENTRY_TEXT,j.getmEntryText());
@@ -91,6 +114,7 @@ public class JournalTable {
         values.put(ENTRY_TIME,j.getmEntryTime());
         values.put(ENTRY_MOOD,j.getmEntryMood());
 
-        db.update(TABLE_NAME,values,ENTRY_ID+"= ?",new String[]{""+j.getmEntryID()});
+        db.update(JournalTable.TABLE_NAME,values,ENTRY_ID +"= ?",new String[]{""+id});
+        //Log.d("FOUND","DB: "+id);
     }
 }
