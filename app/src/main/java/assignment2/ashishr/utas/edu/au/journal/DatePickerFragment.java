@@ -11,7 +11,6 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 /* code source https://android--code.blogspot.com/2015/08/android-datepickerdialog-example.html */
 public class DatePickerFragment extends DialogFragment

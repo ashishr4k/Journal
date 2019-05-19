@@ -1,5 +1,6 @@
 package assignment2.ashishr.utas.edu.au.journal;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,10 +33,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Open the database, so that we can read and write
+        Database databaseConnection = new Database(this);
+        final SQLiteDatabase db = databaseConnection.open();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,19 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mViewPager.findViewById(R.id.editText).getVisibility() == View.GONE){
-                    mViewPager.findViewById(R.id.editText).setVisibility(View.VISIBLE);
-                }else{
-                    mViewPager.findViewById(R.id.editText).setVisibility(View.GONE);
-                }
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        //.setAction("Action", null).show();
-            }
-        });
+        int currentTab  = mViewPager.getCurrentItem();
     }
 
 
