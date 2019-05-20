@@ -76,7 +76,7 @@ public class JournalTable {
             j.setmEntryText(c.getString(c.getColumnIndex(ENTRY_TEXT)));
             j.setmEntryDate(c.getString(c.getColumnIndex(ENTRY_DATE)));
             j.setmEntryTime(c.getString(c.getColumnIndex(ENTRY_TIME)));
-            j.setmEntryMood(c.getString(c.getColumnIndex(ENTRY_MOOD)));
+            j.setmEntryMood(c.getInt(c.getColumnIndex(ENTRY_MOOD)));
             return j;
         }
     }

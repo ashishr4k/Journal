@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 public class MoodAdapter extends ArrayAdapter<Integer> {
     private Integer[] images;
+    private String[] moods = new String[] {"Depressed","Unhappy","Neutral","Happy","Excited"};
 
     public MoodAdapter(Context context, Integer[] images) {
         super(context, android.R.layout.simple_spinner_item, images);
@@ -30,5 +31,8 @@ public class MoodAdapter extends ArrayAdapter<Integer> {
         imageView.setBackgroundResource(images[position]);
         imageView.setLayoutParams(new AbsListView.LayoutParams(100, 100));
         return imageView;
+    }
+    public String getMood(int pos){
+        return moods[pos];
     }
 }

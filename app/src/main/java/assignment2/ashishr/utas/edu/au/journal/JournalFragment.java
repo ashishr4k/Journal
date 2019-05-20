@@ -1,6 +1,8 @@
 package assignment2.ashishr.utas.edu.au.journal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.text.SimpleDateFormat;
 import android.inputmethodservice.Keyboard;
@@ -31,6 +33,8 @@ import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 
@@ -43,6 +47,8 @@ public class JournalFragment extends Fragment {
     SQLiteDatabase db;
     private int mode = 1;
     private int selectedEntry;
+    private Spinner moodSpinner;
+    private MoodAdapter moodAdapter;
 
     public JournalFragment() {
 
@@ -74,11 +80,18 @@ public class JournalFragment extends Fragment {
         entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
         myList.setAdapter(entryListAdapter);
 
+        moodSpinner = (Spinner) inflatedView.findViewById(R.id.spinnerMood);
+        moodAdapter = new MoodAdapter(getContext(),
+                new Integer[]{R.drawable.depressed_face, R.drawable.sad_face, R.drawable.neutral_face, R.drawable.smile_face, R.drawable.happy_face});
+        moodSpinner.setAdapter(moodAdapter);
+        moodSpinner.setSelection(2);
+
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Entry p = entries.get(i);
                 SelectEntry(p.getmEntryID());
+
                 //DeleteEntry(p.getmEntryID());
                 //Log.d("FOUND","ID: "+p.getmEntryID());
                 //DisplayFragment(true);
@@ -91,9 +104,30 @@ public class JournalFragment extends Fragment {
                 //Log.d("FOUND", "pos: " + pos);
                 final Entry p = entries.get(pos);
                 if(mode == 1) {
-                    DeleteEntry(p.getmEntryID());
-                    Snackbar.make(arg0, "Entry Deleted", Snackbar.LENGTH_LONG).
-                            setAction("Action", null).show();
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    DeleteEntry(p.getmEntryID());
+                                    Log.d("FOUND","DELETED");
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    Log.d("FOUND","NO");
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Delete").setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
+
+                    //Snackbar.make(arg0, "Entry Deleted", Snackbar.LENGTH_LONG).
+                            //setAction("Action", null).show();
                 }
 
                 Toolbar bar = (Toolbar) inflatedView.findViewById(R.id.barSelectEntry);
@@ -141,6 +175,7 @@ public class JournalFragment extends Fragment {
         fab.setOnClickListener(new AdapterView.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 inflatedView.findViewById(R.id.helpEntries).setVisibility(View.GONE);
                 if (fm == null) {
                     //Log.d("FOUND", "NULL");
@@ -172,29 +207,50 @@ public class JournalFragment extends Fragment {
                         t1.setText("");
                         t2.setText("");
 
+
                     } else {
                         mode = 1;
+                        moodSpinner.setSelection(2);
                         EditText t1 = (EditText) inflatedView.findViewById(R.id.inputText);
                         EditText t2 = (EditText) inflatedView.findViewById(R.id.inputTitle);
                         t2.requestFocus();
 
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(t2, InputMethodManager.SHOW_IMPLICIT);
+
+                        long myTime = System.currentTimeMillis();
+
+                        SimpleDateFormat format = new SimpleDateFormat("h:mm a");
+                        String dateString = format.format(myTime);
+                        TextView timeText = inflatedView.findViewById(R.id.inputTime);
+                        timeText.setText(dateString);
+
                         DisplayFragment(true);
                         //Log.d("FOUND", "YAY");
 
+                        moodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView adapterView, View view, int i, long l) {
+                                //Toast.makeText(getActivity().getApplicationContext(),""+ a[i], Toast.LENGTH_SHORT).show();
+                                Log.d("FOUND",""+moodAdapter.getMood(i));
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView adapterView) {
+
+                            }
+                        });
                     }
                 }
             }
         });
-        Spinner spinner = (Spinner) inflatedView.findViewById(R.id.spinnerMood);
-        MoodAdapter adapter = new MoodAdapter(getContext(),
-                new Integer[]{R.drawable.disappointed, R.drawable.frowning, R.drawable.neutral, R.drawable.slightlysmiling, R.drawable.openmouth});
-        spinner.setAdapter(adapter);
+
+
+
 
         if(entries.isEmpty()){
             inflatedView.findViewById(R.id.helpEntries).setVisibility(View.VISIBLE);
-            Log.d("FOUND","EMPTY");
+            //Log.d("FOUND","EMPTY");
         }else{
             inflatedView.findViewById(R.id.helpEntries).setVisibility(View.GONE);
         }
@@ -208,12 +264,16 @@ public class JournalFragment extends Fragment {
         EditText title = getActivity().findViewById(R.id.inputTitle);
         EditText text = getActivity().findViewById(R.id.inputText);
 
+        TextView timeText = getActivity().findViewById(R.id.inputTime);
+
+
+        Log.d("FOUND",timeText.getText().toString());
         Entry entry = new Entry();
         entry.setmEntryTitle(title.getText().toString());
         entry.setmEntryText(text.getText().toString());
         entry.setmEntryDate("");
-        entry.setmEntryTime("");
-        entry.setmEntryMood("");
+        entry.setmEntryTime(timeText.getText().toString());
+        entry.setmEntryMood(moodSpinner.getSelectedItemPosition());
 
         JournalTable.insert(db,entry);
         entries = JournalTable.selectAll(db);
@@ -224,9 +284,23 @@ public class JournalFragment extends Fragment {
         Entry entry = JournalTable.selectByID(db,id);
         EditText title = getActivity().findViewById(R.id.inputTitle);
         EditText text = getActivity().findViewById(R.id.inputText);
+        TextView time = getActivity().findViewById(R.id.inputTime);
         title.setText(entry.getmEntryTitle());
         text.setText(entry.getmEntryText());
+        time.setText(entry.getmEntryTime());
+        moodSpinner.setSelection(entry.getmEntryMood());
         DisplayFragment(true);
+        title.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(title, InputMethodManager.SHOW_IMPLICIT);
+
+        time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d("FOUND","CLICK");
+            }
+        });
         //Log.d("FOUND","ID: "+entry.getmEntryID());
         //Log.d("FOUND","Title: "+entry.getmEntryTitle());
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.btnAddEntry);
@@ -241,9 +315,11 @@ public class JournalFragment extends Fragment {
 
         EditText title = getActivity().findViewById(R.id.inputTitle);
         EditText text = getActivity().findViewById(R.id.inputText);
-
+        TextView time = getActivity().findViewById(R.id.inputTime);
         entry.setmEntryTitle(title.getText().toString());
         entry.setmEntryText(text.getText().toString());
+        entry.setmEntryTime(time.getText().toString());
+        entry.setmEntryMood(moodSpinner.getSelectedItemPosition());
         //Log.d("FOUND","ID: "+entry.getmEntryID());
         //Log.d("FOUND","Title: "+entry.getmEntryTitle());
 

@@ -6,7 +6,7 @@ public class Entry {
     private String mEntryText;
     private String mEntryDate;
     private String mEntryTime;
-    private String mEntryMood;
+    private int mEntryMood;
 
     public int getmEntryID(){ return mEntryID; }
     public void setEntryID(int id){this.mEntryID = id;}
@@ -23,6 +23,6 @@ public class Entry {
     public String getmEntryTime(){return mEntryTime;}
     public void setmEntryTime(String time){this.mEntryTime = time;}
 
-    public String getmEntryMood(){return mEntryMood;}
-    public void setmEntryMood(String mood){this.mEntryMood = mood;}
+    public int getmEntryMood(){return mEntryMood;}
+    public void setmEntryMood(int mood){this.mEntryMood = mood;}
 }
