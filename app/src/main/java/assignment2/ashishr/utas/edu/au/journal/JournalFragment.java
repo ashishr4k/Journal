@@ -1,5 +1,6 @@
 package assignment2.ashishr.utas.edu.au.journal;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.text.SimpleDateFormat;
 import android.inputmethodservice.Keyboard;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +31,7 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,6 +45,10 @@ import java.util.Calendar;
 
 
 public class JournalFragment extends Fragment {
+    enum Mode
+    {
+        Adding, Editing, Deleting, Viewing
+    }
     private ListView myList;
     private FragmentManager fm;
     private JournalAdapter entryListAdapter;
@@ -49,10 +56,12 @@ public class JournalFragment extends Fragment {
     Database databaseConnection;
     SQLiteDatabase db;
     private int mode = 1;
-    private int selectedEntry;
+    //Mode mMode = Mode.Viewing;
+    private int selectedEntry = -1;
     private Spinner moodSpinner;
     private MoodAdapter moodAdapter;
-
+    private String datestr;
+    private int[] moodResources  = {R.drawable.depressed_face, R.drawable.sad_face, R.drawable.neutral_face, R.drawable.smile_face, R.drawable.happy_face};
     public JournalFragment() {
 
     }
@@ -78,7 +87,9 @@ public class JournalFragment extends Fragment {
         final int currentMonth = calendar.get(Calendar.MONTH);
         final int currentYear = calendar.get(Calendar.YEAR);
         final TextView date = inflatedView.findViewById(R.id.dateText);//++++ruihao
-        date.setText(currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate));
+
+        datestr = currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate);
+        date.setText(datestr);//month start from 0 to 11,so month should+1
         entries = JournalTable.selectByDate(db,date.getText().toString());//++++ruihao
 
         //show all the data
@@ -94,7 +105,8 @@ public class JournalFragment extends Fragment {
 
         moodSpinner = (Spinner) inflatedView.findViewById(R.id.spinnerMood);
         moodAdapter = new MoodAdapter(getContext(),
-                new Integer[]{R.drawable.depressed_face, R.drawable.sad_face, R.drawable.neutral_face, R.drawable.smile_face, R.drawable.happy_face});
+                new Integer[]{R.drawable.depressed_face, R.drawable.sad_face, R.drawable.neutral_face,
+                        R.drawable.smile_face, R.drawable.happy_face});
         moodSpinner.setAdapter(moodAdapter);
         moodSpinner.setSelection(2);
 
@@ -109,6 +121,7 @@ public class JournalFragment extends Fragment {
                 //DisplayFragment(true);
             }
         });
+        /*
         myList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
@@ -123,6 +136,7 @@ public class JournalFragment extends Fragment {
                                 case DialogInterface.BUTTON_POSITIVE:
                                     //Yes button clicked
                                     DeleteEntry(p.getmEntryID());
+                                    UpdateList(datestr);
                                     Log.d("FOUND","DELETED");
                                     break;
 
@@ -148,18 +162,58 @@ public class JournalFragment extends Fragment {
                     //Log.d("FOUND", "" + bar.getY());
                 } else {
                     //Log.d("FOUND", "" + bar.getHeight());
-                    /*
+
                     bar.animate().translationY(144f)
                             .alpha(200).setDuration(1000)
                             .setInterpolator(new DecelerateInterpolator());
-                    */
+
                     //bar.setVisibility(View.GONE);
                 }
 
                 return true;
             }
-        });
+        });*/
         //date +ruihao
+
+        Button deleteButton = inflatedView.findViewById(R.id.btnDelete);
+        deleteButton.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //final Entry p = entries.get(selectedEntry);
+                //Entry entry = JournalTable.selectByID(db,selectedEntry);
+
+                if(selectedEntry != -1) {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    DeleteEntry(selectedEntry);
+                                    DisplayFragment(false);
+                                    hideKeyboard(getActivity());
+                                    UpdateList(datestr);
+                                    selectedEntry = -1;
+                                    //Log.d("FOUND","DELETED");
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    //Log.d("FOUND","NO");
+
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Delete").setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
+                }
+                //Log.d("FOUND", "entry: " + entry.getmEntryTitle());
+
+            }
+        });
 
         Button calenderButton = inflatedView.findViewById(R.id.datePick);
         calenderButton.setOnClickListener(new AdapterView.OnClickListener()
@@ -172,12 +226,15 @@ public class JournalFragment extends Fragment {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
                             {
-                                String datestr = year+"/"+String.format("%02d",(month+1))+"/"+String.format("%02d",dayOfMonth);
+                                datestr = year+"/"+String.format("%02d",(month+1))+"/"+String.format("%02d",dayOfMonth);
                                 date.setText(datestr);//month start from 0 to 11,so month should+1
 
+                                /*
                                 entries = JournalTable.selectByDate(db,datestr);
                                 entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
                                 myList.setAdapter(entryListAdapter);
+                                */
+                                UpdateList(datestr);
                             }
                         },currentYear,currentMonth,currentDate);
 
@@ -219,7 +276,6 @@ public class JournalFragment extends Fragment {
         fab.setOnClickListener(new AdapterView.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 inflatedView.findViewById(R.id.helpEntries).setVisibility(View.GONE);
                 if (fm == null) {
                     //Log.d("FOUND", "NULL");
@@ -228,11 +284,14 @@ public class JournalFragment extends Fragment {
                     if (fm.findFragmentById(R.id.entryFragment).isVisible()) {
                         if(mode == 1) {
                             AddEntry();
+                            selectedEntry = -1;
                             //Log.d("FOUND","ADDED");
                         }
                         else if(mode == 2){
                             UpdateEntry(selectedEntry);
                             mode = 1;
+                            selectedEntry = -1;
+
                             //Log.d("FOUND","EDIT");
                         }
                         //entryListAdapter.notifyDataSetChanged();
@@ -243,8 +302,8 @@ public class JournalFragment extends Fragment {
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 
-                        Snackbar.make(view, "Entry Added", Snackbar.LENGTH_LONG).
-                                setAction("Action", null).show();
+                        //Snackbar.make(view, "Entry Added", Snackbar.LENGTH_LONG).
+                                //setAction("Action", null).show();
 
                         EditText t1 = (EditText) inflatedView.findViewById(R.id.inputText);
                         EditText t2 = (EditText) inflatedView.findViewById(R.id.inputTitle);
@@ -289,9 +348,6 @@ public class JournalFragment extends Fragment {
             }
         });
 
-
-
-
         if(entries.isEmpty()){
             inflatedView.findViewById(R.id.helpEntries).setVisibility(View.VISIBLE);
             //Log.d("FOUND","EMPTY");
@@ -320,6 +376,9 @@ public class JournalFragment extends Fragment {
         entry.setmEntryTime(timeText.getText().toString());
         entry.setmEntryMood(moodSpinner.getSelectedItemPosition());
 
+        Log.d("FOUND",""+entry.getmEntryMood());
+        ImageView mImage = getActivity().findViewById(R.id.moodImage);
+        mImage.setImageResource(moodResources[entry.getmEntryMood()]);
         JournalTable.insert(db,entry);
         //entries = JournalTable.selectAll(db);
         entries = JournalTable.selectByDate(db,entry.getmEntryDate());
@@ -401,5 +460,37 @@ public class JournalFragment extends Fragment {
                     .hide(fm.findFragmentById(R.id.entryFragment))
                     .commit();
         }
+    }
+
+    void UpdateList(String date){
+        entries = JournalTable.selectByDate(db,date);
+        entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
+        myList.setAdapter(entryListAdapter);
+        if(entries.isEmpty()){
+            getActivity().findViewById(R.id.helpEntries).setVisibility(View.VISIBLE);
+            Log.d("FOUND","EMPTY");
+            ImageView mImage = getActivity().findViewById(R.id.moodImage);
+                    mImage.setBackgroundResource(R.drawable.neutral_face);
+        }else{
+            getActivity().findViewById(R.id.helpEntries).setVisibility(View.GONE);
+        }
+    }
+
+    //for testing
+    void ShowAll(){
+        entries = JournalTable.selectAll(db);
+        entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
+        myList.setAdapter(entryListAdapter);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
