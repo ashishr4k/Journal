@@ -7,6 +7,7 @@ public class Entry {
     private String mEntryDate;
     private String mEntryTime;
     private int mEntryMood;
+    private String mEntryImage;
 
     public int getmEntryID(){ return mEntryID; }
     public void setEntryID(int id){this.mEntryID = id;}
@@ -25,4 +26,11 @@ public class Entry {
 
     public int getmEntryMood(){return mEntryMood;}
     public void setmEntryMood(int mood){this.mEntryMood = mood;}
+
+    public String getmEntryImage() {
+        return mEntryImage;
+    }
+    public void setmEntryImage(String mEntryImage) {
+        this.mEntryImage = mEntryImage;
+    }
 }

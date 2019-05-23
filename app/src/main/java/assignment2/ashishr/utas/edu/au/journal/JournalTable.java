@@ -16,6 +16,7 @@ public class JournalTable {
     public static final String ENTRY_DATE = "entry_date";
     public static final String ENTRY_TIME = "entry_time";
     public static final String ENTRY_MOOD = "mood";
+    //public static final String ENTRY_IMAGE = "imageUri";
 
     public static final String CREATE_STATEMENT = "CREATE TABLE "
             + TABLE_NAME
@@ -24,6 +25,7 @@ public class JournalTable {
             + ENTRY_TEXT + " string not null, "
             + ENTRY_DATE + " date not null, "
             + ENTRY_TIME + " time not null, "
+            //+ ENTRY_IMAGE + " string not null, "
             + ENTRY_MOOD + " int not null "
             +");";
 
@@ -36,6 +38,7 @@ public class JournalTable {
         values.put(ENTRY_DATE,j.getmEntryDate());
         values.put(ENTRY_TIME,j.getmEntryTime());
         values.put(ENTRY_MOOD,j.getmEntryMood());
+        //values.put(ENTRY_IMAGE,j.getmEntryImage());
         db.insert(TABLE_NAME,null,values);
     }
 
@@ -77,6 +80,8 @@ public class JournalTable {
             j.setmEntryDate(c.getString(c.getColumnIndex(ENTRY_DATE)));
             j.setmEntryTime(c.getString(c.getColumnIndex(ENTRY_TIME)));
             j.setmEntryMood(c.getInt(c.getColumnIndex(ENTRY_MOOD)));
+            //j.getmEntryImage(c.getString(c.getColumnIndex(ENTRY_IMAGE)));
+
             return j;
         }
     }
@@ -113,8 +118,33 @@ public class JournalTable {
         values.put(ENTRY_DATE,j.getmEntryDate());
         values.put(ENTRY_TIME,j.getmEntryTime());
         values.put(ENTRY_MOOD,j.getmEntryMood());
+        //values.put(ENTRY_IMAGE,j.getmEntryImage());
 
         db.update(JournalTable.TABLE_NAME,values,ENTRY_ID +"= ?",new String[]{""+id});
         //Log.d("FOUND","DB: "+id);
+    }
+
+    //a function for selecting journal on specific date****add at 5/21
+    public static ArrayList<Entry> selectByDate(SQLiteDatabase db, String date)
+    {
+        ArrayList<Entry> result =new ArrayList<Entry>();
+
+        Cursor c = db.query(TABLE_NAME, null, ENTRY_DATE + "= ?",new String[]{date}, null, null, ENTRY_TIME+" DESC");
+        //check for error
+        if (c != null)
+        {
+            //make sure the cursor is at the start of the list
+            c.moveToFirst();
+            //loop through until we are at the end of the list
+
+            while (!c.isAfterLast())
+            {
+                Entry entry = createFromCursor(c);
+                result.add(entry);
+                //increment the cursor
+                c.moveToNext();
+            }
+        }
+        return result;
     }
 }

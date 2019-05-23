@@ -1,6 +1,7 @@
 package assignment2.ashishr.utas.edu.au.journal;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -36,6 +38,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class JournalFragment extends Fragment {
@@ -69,8 +72,17 @@ public class JournalFragment extends Fragment {
         entry1.setmEntryMood("SAD");
         JournalTable.insert(db,entry1);*/
 
-        entries = JournalTable.selectAll(db);
+        //++ruihao   make sure the database can select journal by date when get open
+        final Calendar calendar = Calendar.getInstance();
+        final int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
+        final int currentMonth = calendar.get(Calendar.MONTH);
+        final int currentYear = calendar.get(Calendar.YEAR);
+        final TextView date = inflatedView.findViewById(R.id.dateText);//++++ruihao
+        date.setText(currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate));
+        entries = JournalTable.selectByDate(db,date.getText().toString());//++++ruihao
+
         //show all the data
+        //entries = JournalTable.selectAll(db);
         for (int i = 0; i < entries.size(); i++) {
             Entry j = entries.get(i);
             Log.d("FOUND", j.getmEntryID() + ": " + j.getmEntryTitle());
@@ -147,8 +159,36 @@ public class JournalFragment extends Fragment {
                 return true;
             }
         });
+        //date +ruihao
 
-        long myDate = System.currentTimeMillis();
+        Button calenderButton = inflatedView.findViewById(R.id.datePick);
+        calenderButton.setOnClickListener(new AdapterView.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog=new DatePickerDialog(
+                        getActivity(), new DatePickerDialog.OnDateSetListener()
+                        {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+                            {
+                                String datestr = year+"/"+String.format("%02d",(month+1))+"/"+String.format("%02d",dayOfMonth);
+                                date.setText(datestr);//month start from 0 to 11,so month should+1
+
+                                entries = JournalTable.selectByDate(db,datestr);
+                                entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
+                                myList.setAdapter(entryListAdapter);
+                            }
+                        },currentYear,currentMonth,currentDate);
+
+                datePickerDialog.show();
+
+
+            }
+
+        });
+
+        /*long myDate = System.currentTimeMillis();
 
         SimpleDateFormat format = new SimpleDateFormat("dd MMM");
         String dateString = format.format(myDate);
@@ -157,6 +197,7 @@ public class JournalFragment extends Fragment {
         TextView date = inflatedView.findViewById(R.id.dateText);
         date.setText(dateString);
 
+
         Button calenderButton = inflatedView.findViewById(R.id.datePick);
         CalendarView myCalendar = inflatedView.findViewById(R.id.calendarView);
 
@@ -164,9 +205,12 @@ public class JournalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 DialogFragment dFragment = new DatePickerFragment();
+
                 dFragment.show(getFragmentManager(), "Date Picker");
+
             }
         });
+        */
 
         fm = getChildFragmentManager();
         DisplayFragment(false);
@@ -263,7 +307,7 @@ public class JournalFragment extends Fragment {
 
         EditText title = getActivity().findViewById(R.id.inputTitle);
         EditText text = getActivity().findViewById(R.id.inputText);
-
+        TextView date = getActivity().findViewById(R.id.dateText);//ruihao
         TextView timeText = getActivity().findViewById(R.id.inputTime);
 
 
@@ -271,15 +315,19 @@ public class JournalFragment extends Fragment {
         Entry entry = new Entry();
         entry.setmEntryTitle(title.getText().toString());
         entry.setmEntryText(text.getText().toString());
-        entry.setmEntryDate("");
+        entry.setmEntryDate(date.getText().toString());
+        Log.d("entrydate",entry.getmEntryDate());
         entry.setmEntryTime(timeText.getText().toString());
         entry.setmEntryMood(moodSpinner.getSelectedItemPosition());
 
         JournalTable.insert(db,entry);
-        entries = JournalTable.selectAll(db);
+        //entries = JournalTable.selectAll(db);
+        entries = JournalTable.selectByDate(db,entry.getmEntryDate());
         entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
         myList.setAdapter(entryListAdapter);
     }
+
+
     public void SelectEntry(int id){
         Entry entry = JournalTable.selectByID(db,id);
         EditText title = getActivity().findViewById(R.id.inputTitle);
@@ -324,7 +372,7 @@ public class JournalFragment extends Fragment {
         //Log.d("FOUND","Title: "+entry.getmEntryTitle());
 
         JournalTable.update(db,entry,id);
-        entries = JournalTable.selectAll(db);
+        entries = JournalTable.selectByDate(db,entry.getmEntryDate());
         entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
         myList.setAdapter(entryListAdapter);
     }
