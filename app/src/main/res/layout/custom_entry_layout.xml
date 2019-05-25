@@ -50,8 +50,11 @@
         android:layout_marginRight="8dp"
         android:background="@null"
         android:ems="10"
+        android:gravity="top"
         android:hint="Text..."
         android:inputType="textMultiLine"
+        android:lines="4"
+        android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputTitle" />
@@ -91,25 +94,23 @@
     <Button
         android:id="@+id/button2"
         android:layout_width="61dp"
-        android:layout_height="24dp"
+        android:layout_height="11dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:text="Button"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputText" />
+        app:layout_constraintTop_toBottomOf="@+id/inputImage" />
 
     <Button
         android:id="@+id/btnDelete"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@android:drawable/ic_menu_delete"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/inputTime" />
+        app:layout_constraintTop_toTopOf="@+id/inputText" />
 
     <Button
         android:id="@+id/btnClose"
@@ -124,5 +125,49 @@
         app:layout_constraintEnd_toStartOf="@+id/inputTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/inputImage"
+        android:layout_width="69dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inputText"
+        app:srcCompat="@android:color/white" />
+
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="32dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@android:drawable/ic_menu_share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnDelete" />
+
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="43dp"
+        android:layout_height="38dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/ic_menu_camera"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toStartOf="@+id/btnShare" />
+
+    <Button
+        android:id="@+id/btnGallery"
+        android:layout_width="47dp"
+        android:layout_height="37dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="20dp"
+        android:background="@android:drawable/ic_menu_gallery"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toStartOf="@+id/btnCamera" />
 
 </android.support.constraint.ConstraintLayout>
