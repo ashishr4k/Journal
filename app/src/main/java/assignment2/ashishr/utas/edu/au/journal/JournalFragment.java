@@ -73,14 +73,6 @@ public class JournalFragment extends Fragment {
         databaseConnection = new Database(getActivity());
         db = databaseConnection.open();
 
-        /*Entry entry1 = new Entry();
-        entry1.setmEntryTitle("One");
-        entry1.setmEntryText("A LINE OF TEXT");
-        entry1.setmEntryDate("10/10/10");
-        entry1.setmEntryTime("5:00");
-        entry1.setmEntryMood("SAD");
-        JournalTable.insert(db,entry1);*/
-
         //++ruihao   make sure the database can select journal by date when get open
         final Calendar calendar = Calendar.getInstance();
         final int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
@@ -115,65 +107,8 @@ public class JournalFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final Entry p = entries.get(i);
                 SelectEntry(p.getmEntryID());
-
-                //DeleteEntry(p.getmEntryID());
-                //Log.d("FOUND","ID: "+p.getmEntryID());
-                //DisplayFragment(true);
             }
         });
-        /*
-        myList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                //Log.d("FOUND", "pos: " + pos);
-                final Entry p = entries.get(pos);
-                if(mode == 1) {
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which){
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Yes button clicked
-                                    DeleteEntry(p.getmEntryID());
-                                    UpdateList(datestr);
-                                    Log.d("FOUND","DELETED");
-                                    break;
-
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    //No button clicked
-                                    Log.d("FOUND","NO");
-                                    break;
-                            }
-                        }
-                    };
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Delete").setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
-
-                    //Snackbar.make(arg0, "Entry Deleted", Snackbar.LENGTH_LONG).
-                            //setAction("Action", null).show();
-                }
-
-                Toolbar bar = (Toolbar) inflatedView.findViewById(R.id.barSelectEntry);
-                if (bar.getVisibility() == View.GONE) {
-                    //bar.setVisibility(View.VISIBLE);
-                    //Log.d("FOUND", "" + bar.getY());
-                } else {
-                    //Log.d("FOUND", "" + bar.getHeight());
-
-                    bar.animate().translationY(144f)
-                            .alpha(200).setDuration(1000)
-                            .setInterpolator(new DecelerateInterpolator());
-
-                    //bar.setVisibility(View.GONE);
-                }
-
-                return true;
-            }
-        });*/
-        //date +ruihao
 
         Button deleteButton = inflatedView.findViewById(R.id.btnDelete);
         deleteButton.setOnClickListener(new AdapterView.OnClickListener() {
@@ -245,7 +180,8 @@ public class JournalFragment extends Fragment {
 
         });
 
-        /*long myDate = System.currentTimeMillis();
+        /*
+        long myDate = System.currentTimeMillis();
 
         SimpleDateFormat format = new SimpleDateFormat("dd MMM");
         String dateString = format.format(myDate);
@@ -358,9 +294,6 @@ public class JournalFragment extends Fragment {
     }
 
     public void AddEntry(){
-        //Database databaseConnection = new Database(getActivity());
-        //final SQLiteDatabase db = databaseConnection.open();
-
         EditText title = getActivity().findViewById(R.id.inputTitle);
         EditText text = getActivity().findViewById(R.id.inputText);
         TextView date = getActivity().findViewById(R.id.dateText);//ruihao
@@ -368,15 +301,18 @@ public class JournalFragment extends Fragment {
 
 
         Log.d("FOUND",timeText.getText().toString());
+
         Entry entry = new Entry();
         entry.setmEntryTitle(title.getText().toString());
         entry.setmEntryText(text.getText().toString());
         entry.setmEntryDate(date.getText().toString());
         Log.d("entrydate",entry.getmEntryDate());
+
         entry.setmEntryTime(timeText.getText().toString());
         entry.setmEntryMood(moodSpinner.getSelectedItemPosition());
 
         Log.d("FOUND",""+entry.getmEntryMood());
+
         ImageView mImage = getActivity().findViewById(R.id.moodImage);
         mImage.setImageResource(moodResources[entry.getmEntryMood()]);
         JournalTable.insert(db,entry);
