@@ -21,6 +21,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -198,6 +200,8 @@ public class JournalFragment extends Fragment {
                                 entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
                                 myList.setAdapter(entryListAdapter);
                                 */
+                                //Log.d("debugger","date" + datestr);
+
                                 UpdateList(datestr);
                             }
                         },currentYear,currentMonth,currentDate);
@@ -388,7 +392,7 @@ public class JournalFragment extends Fragment {
         entry.setmEntryText(text.getText().toString());
         entry.setmEntryDate(date.getText().toString());
         entry.setmEntryImage(imageURI);
-        Log.d("debugger","addingURI " + imageURI);
+        //Log.d("debugger","addingURI " + imageURI);
 
         ImageView image = getActivity().findViewById(R.id.inputImage);
         image.setVisibility(View.GONE);
@@ -436,7 +440,7 @@ public class JournalFragment extends Fragment {
             //Bitmap image= BitmapFactory.decodeStream(inputStream);
             //imageView.setImageBitmap(image);
             Uri imageU = Uri.parse(imageURI);
-            Log.d("debugger",imageU.toString());
+            //Log.d("debugger",imageU.toString());
 
             ImageView imageV = getActivity().findViewById(R.id.inputImage);
             imageV.setVisibility(View.VISIBLE);
@@ -447,7 +451,7 @@ public class JournalFragment extends Fragment {
             ImageView image = getActivity().findViewById(R.id.inputImage);
             image.setVisibility(View.GONE);
             //image.setImageURI(null);
-            Log.d("debugger","none");
+            //Log.d("debugger","none");
         }
 
         DisplayFragment(true);
@@ -550,7 +554,7 @@ public class JournalFragment extends Fragment {
         entries = JournalTable.selectByDate(db,date);
         entryListAdapter = new JournalAdapter(getActivity().getApplicationContext(), R.layout.custom_list_layout, entries);
         myList.setAdapter(entryListAdapter);
-        if(entries.isEmpty()){
+        if(entries.isEmpty() && !fm.findFragmentById(R.id.entryFragment).isVisible()){
             getActivity().findViewById(R.id.helpEntries).setVisibility(View.VISIBLE);
             //Log.d("FOUND","EMPTY");
             ImageView mImage = getActivity().findViewById(R.id.moodImage);
@@ -740,7 +744,7 @@ public class JournalFragment extends Fragment {
             if(requestCode==REQUEST_IMAGE_CAPTURE)
             {
                 Uri imageU = Uri.parse(imageURI);
-                Log.d("debugger",imageU.toString());
+                //Log.d("debugger",imageU.toString());
 
                 ImageView myImageView = getActivity().findViewById(R.id.inputImage);
                 setPic(myImageView, mCurrentPhotoPath);

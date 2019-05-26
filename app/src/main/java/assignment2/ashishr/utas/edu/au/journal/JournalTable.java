@@ -147,4 +147,28 @@ public class JournalTable {
         }
         return result;
     }
+    public static ArrayList<Entry> lastWeek(SQLiteDatabase db){
+        ArrayList<Entry> result = new ArrayList<Entry>();
+
+
+        String whereClause = "ENTRY_DATE >= date('now', 'weekday 0', '-7 days')";
+
+        Cursor c = db.query(TABLE_NAME, null, whereClause, null, null, null, null);
+        //check for error
+        if (c != null)
+        {
+            //make sure the cursor is at the start of the list
+            c.moveToFirst();
+            //loop through until we are at the end of the list
+
+            while (!c.isAfterLast())
+            {
+                Entry entry = createFromCursor(c);
+                result.add(entry);
+                //increment the cursor
+                c.moveToNext();
+            }
+        }
+        return result;
+    }
 }
