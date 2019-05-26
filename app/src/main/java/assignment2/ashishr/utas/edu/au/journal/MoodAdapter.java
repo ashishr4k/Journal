@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 public class MoodAdapter extends ArrayAdapter<Integer> {
     private Integer[] images;
-    private String[] moods = new String[] {"Depressed","Unhappy","Neutral","Happy","Excited"};
+    public String[] moods = new String[] {"Depressed","Unhappy","Neutral","Happy","Excited"};
 
     public MoodAdapter(Context context, Integer[] images) {
         super(context, android.R.layout.simple_spinner_item, images);

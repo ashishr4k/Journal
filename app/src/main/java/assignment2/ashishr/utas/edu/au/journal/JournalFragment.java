@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.RenderProcessGoneDetail;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -118,6 +119,17 @@ public class JournalFragment extends Fragment {
                 final Entry p = entries.get(i);
                 //Log.d("debugger","URI is" + p.getmEntryImage());
                 SelectEntry(p.getmEntryID());
+            }
+        });
+
+        myList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final Entry p = entries.get(position);
+                if(mode == 1) {
+                    //DeleteEntry(p.getmEntryID());
+                }
+                return false;
             }
         });
 
@@ -330,6 +342,11 @@ public class JournalFragment extends Fragment {
                         timeText.setText(dateString);
 
                         DisplayFragment(true);
+                        Button btnDelete = inflatedView.findViewById(R.id.btnDelete);
+                        Button btnShare = inflatedView.findViewById(R.id.btnShare);
+                        imageView.setVisibility(View.GONE);
+                        btnDelete.setVisibility(View.GONE);
+                        btnShare.setVisibility(View.GONE);
                         //Log.d("FOUND", "YAY");
 
                         moodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -407,7 +424,7 @@ public class JournalFragment extends Fragment {
         time.setText(entry.getmEntryTime());
         moodSpinner.setSelection(entry.getmEntryMood());
         imageURI = entry.getmEntryImage();
-        if(imageURI != ""){
+        if(!imageURI.equals("")){
             /*
             ImageView image = getActivity().findViewById(R.id.inputImage);
             setPic(image, imageURI);
@@ -429,8 +446,10 @@ public class JournalFragment extends Fragment {
         }else{
             ImageView image = getActivity().findViewById(R.id.inputImage);
             image.setVisibility(View.GONE);
-            image.setImageURI(null);
+            //image.setImageURI(null);
+            Log.d("debugger","none");
         }
+
         DisplayFragment(true);
         title.requestFocus();
 
@@ -439,17 +458,29 @@ public class JournalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(selectedEntry != -1) {
-                    Uri shareuri = Uri.parse(JournalTable.selectByID(db,selectedEntry).getmEntryImage());
+
+                    Uri shareuri = Uri.parse(JournalTable.selectByID(db, selectedEntry).getmEntryImage());
+
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(shareIntent.ACTION_SEND);
-                    shareIntent.putExtra(shareIntent.EXTRA_TEXT, "Title: " + entry.getmEntryTitle() + "\n" + "Text:" + entry.getmEntryText());
-                    shareIntent.putExtra(shareIntent.EXTRA_STREAM, shareuri);
+                    shareIntent.putExtra(shareIntent.EXTRA_TEXT, "Title: " + entry.getmEntryTitle() + "\n" + "Text:" + entry.getmEntryText()
+                            + "\n" + "Date:" + entry.getmEntryDate() + "\n" + "Mood:" + moodAdapter.moods[entry.getmEntryMood()]);
+                    if(!JournalTable.selectByID(db,selectedEntry).getmEntryImage().equals("")) {
+
+                        shareIntent.putExtra(shareIntent.EXTRA_STREAM, shareuri);
+                    }
                     shareIntent.setType("image/*");
                     shareIntent.addFlags(shareIntent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(Intent.createChooser(shareIntent, "Share entry..."));
                 }
             }
         });
+
+        Button btnDelete = getActivity().findViewById(R.id.btnDelete);
+        Button btnShare = getActivity().findViewById(R.id.btnShare);
+
+        btnDelete.setVisibility(View.VISIBLE);
+        btnShare.setVisibility(View.VISIBLE);
 
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(title, InputMethodManager.SHOW_IMPLICIT);
@@ -549,13 +580,14 @@ public class JournalFragment extends Fragment {
 
     void Camera(){
         //☆☆☆☆☆☆add image part(don't forget changes about row 42-49 & Android manifest.xml) ☆☆☆☆☆☆
-        Button imageFromCamera = getActivity().findViewById(R.id.btnCamera);
+        final Button imageFromCamera = getActivity().findViewById(R.id.btnCamera);
         Button imageFromStorage = getActivity().findViewById(R.id.btnGallery);
         imageView = getActivity().findViewById(R.id.inputImage);
         imageFromStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
+                imageView.setVisibility(View.VISIBLE);
                 Intent pickImage = new Intent(Intent.ACTION_PICK);
                 File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
                 String pictureDirectoryPath = pictureDirectory.getPath();
@@ -577,7 +609,6 @@ public class JournalFragment extends Fragment {
 
             }
         });
-
 
         //set onclick listener on camera button
 

@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/dateText"
-        android:layout_width="203dp"
+        android:layout_width="137dp"
         android:layout_height="34dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -19,9 +19,10 @@
         android:text="@string/dateText"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.327"
+        app:layout_constraintHorizontal_bias="0.424"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:gravity="left" />
 
     <Button
         android:id="@+id/datePick"
@@ -127,6 +128,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="2dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/datePick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/datePick"

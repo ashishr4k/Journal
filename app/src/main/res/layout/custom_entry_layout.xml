@@ -99,18 +99,18 @@
         android:text="Button"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputImage" />
+        app:layout_constraintTop_toBottomOf="@+id/btnGallery" />
 
     <Button
         android:id="@+id/btnDelete"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="@android:drawable/ic_menu_delete"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/inputText" />
+        app:layout_constraintStart_toEndOf="@+id/btnShare"
+        app:layout_constraintTop_toTopOf="@+id/inputImage" />
 
     <Button
         android:id="@+id/btnClose"
@@ -130,44 +130,46 @@
         android:id="@+id/inputImage"
         android:layout_width="69dp"
         android:layout_height="49dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputText"
         app:srcCompat="@android:color/white" />
 
     <Button
         android:id="@+id/btnShare"
-        android:layout_width="32dp"
-        android:layout_height="35dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="@android:drawable/ic_menu_share"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDelete" />
+        android:visibility="visible"
+        app:layout_constraintStart_toEndOf="@+id/btnCamera"
+        app:layout_constraintTop_toTopOf="@+id/inputImage" />
 
     <Button
         android:id="@+id/btnCamera"
-        android:layout_width="43dp"
-        android:layout_height="38dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:background="@android:drawable/ic_menu_camera"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toStartOf="@+id/btnShare" />
+        app:layout_constraintStart_toEndOf="@+id/btnGallery"
+        app:layout_constraintTop_toTopOf="@+id/inputImage" />
 
     <Button
         android:id="@+id/btnGallery"
-        android:layout_width="47dp"
-        android:layout_height="37dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
         android:background="@android:drawable/ic_menu_gallery"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toStartOf="@+id/btnCamera" />
+        app:layout_constraintStart_toEndOf="@+id/inputImage"
+        app:layout_constraintTop_toTopOf="@+id/inputImage" />
 
 </android.support.constraint.ConstraintLayout>
