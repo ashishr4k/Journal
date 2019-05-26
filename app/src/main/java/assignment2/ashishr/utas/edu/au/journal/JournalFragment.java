@@ -276,6 +276,7 @@ public class JournalFragment extends Fragment {
             public void onClick(View view) {
                 inflatedView.findViewById(R.id.helpEntries).setVisibility(View.GONE);
                 Camera();
+                imageView.setImageBitmap(null);
                 if (fm == null) {
                     //Log.d("FOUND", "NULL");
                 } else {
@@ -373,7 +374,9 @@ public class JournalFragment extends Fragment {
         Log.d("debugger","addingURI " + imageURI);
 
         ImageView image = getActivity().findViewById(R.id.inputImage);
-        //image.setVisibility(View.GONE);
+        image.setVisibility(View.GONE);
+        image.setImageURI(null);
+        image.setImageBitmap(null);
 
         //Log.d("entrydate",entry.getmEntryDate());
 
@@ -419,13 +422,14 @@ public class JournalFragment extends Fragment {
             Log.d("debugger",imageU.toString());
 
             ImageView imageV = getActivity().findViewById(R.id.inputImage);
-
+            imageV.setVisibility(View.VISIBLE);
             imageV.setImageURI(null);
             imageV.setImageURI(imageU);
 
         }else{
             ImageView image = getActivity().findViewById(R.id.inputImage);
-            //image.setVisibility(View.GONE);
+            image.setVisibility(View.GONE);
+            image.setImageURI(null);
         }
         DisplayFragment(true);
         title.requestFocus();
@@ -547,7 +551,7 @@ public class JournalFragment extends Fragment {
         //☆☆☆☆☆☆add image part(don't forget changes about row 42-49 & Android manifest.xml) ☆☆☆☆☆☆
         Button imageFromCamera = getActivity().findViewById(R.id.btnCamera);
         Button imageFromStorage = getActivity().findViewById(R.id.btnGallery);
-        imageView = getActivity().findViewById(R.id.image);
+        imageView = getActivity().findViewById(R.id.inputImage);
         imageFromStorage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -704,6 +708,9 @@ public class JournalFragment extends Fragment {
         {
             if(requestCode==REQUEST_IMAGE_CAPTURE)
             {
+                Uri imageU = Uri.parse(imageURI);
+                Log.d("debugger",imageU.toString());
+
                 ImageView myImageView = getActivity().findViewById(R.id.inputImage);
                 setPic(myImageView, mCurrentPhotoPath);
             }
