@@ -1,6 +1,10 @@
 package assignment2.ashishr.utas.edu.au.journal;
 
+import android.app.DatePickerDialog;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -24,6 +29,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class StatsFragment extends Fragment {
 
@@ -45,7 +51,8 @@ public class StatsFragment extends Fragment {
 
     public String[] moods = new String[] {"Depressed","Unhappy","Neutral","Happy","Excited"};
 
-    public int page = -1;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
+
     public StatsFragment(){
 
     }
@@ -57,14 +64,6 @@ public class StatsFragment extends Fragment {
         databaseConnection = new Database(getActivity());
         db = databaseConnection.open();
 
-        final Calendar calendar = Calendar.getInstance();
-        /////////
-        calendar.add(Calendar.DAY_OF_MONTH,-7);
-
-        final int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
-        final int currentMonth = calendar.get(Calendar.MONTH);
-        final int currentYear = calendar.get(Calendar.YEAR);
-        dateString = currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate);
         depressed = 0;
         sad = 0;
         neutral = 0;
@@ -90,10 +89,6 @@ public class StatsFragment extends Fragment {
                 ContextCompat.getColor(getContext(), android.R.color.holo_orange_light));
         barChart.getLegend().setEnabled(false);
 
-        ArrayList<String> days = new ArrayList<>();
-        days.add("Mon");
-        days.add("Tue");
-        days.add("Wed");
 
         barChart.getXAxis().setDrawGridLines(false);
         barChart.getXAxis().setDrawAxisLine(false);
@@ -103,7 +98,6 @@ public class StatsFragment extends Fragment {
 
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //xaxis.setAxisMinimum(0.0f);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
@@ -111,10 +105,7 @@ public class StatsFragment extends Fragment {
                 return moods[(int) value];
             }
         });
-        //barChart.getAxisLeft().setEnabled(false);
         barChart.getAxisRight().setDrawGridLines(false);
-        //barChart.getAxisLeft().setAxisMinimum(0);
-        //barChart.getAxisRight().setAxisMinimum(0);
 
         LastSevenDays();
 
@@ -126,94 +117,85 @@ public class StatsFragment extends Fragment {
         barChart.setScaleEnabled(false);
 
 
-        Button buttonSeven = inflatedView.findViewById(R.id.btnStats7);
-        buttonSeven.setOnClickListener(new View.OnClickListener() {
+        Button buttonWeek = inflatedView.findViewById(R.id.btnWeek);
+        buttonWeek.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LastSevenDays();
-                //depressed++;
-                //Log.d("debugger", "depressed: "+depressed);
-
-
+                Log.d("debugger", "week: ");
                 theData = new BarData(barDataSet);
                 barChart.setData(theData);
 
-                //Log.d("debugger", "depressed: "+depressed);
+            }
+        });
+
+        Button buttonMonth = inflatedView.findViewById(R.id.btnMonth);
+        buttonMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_MONTH,-7);
+
+                int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
+                int currentMonth = calendar.get(Calendar.MONTH);
+                int currentYear = calendar.get(Calendar.YEAR);
+
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        mDateSetListener,
+                        currentYear,
+                        currentMonth,
+                        currentDate);
+
+
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+
+                //Log.d("debugger", "month: ");
+
 
             }
         });
+
+        mDateSetListener  = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                selectedMonth(month);
+                theData = new BarData(barDataSet);
+                barChart.setData(theData);
+                Log.d("debugger",""+(month+1));
+            }
+        };
+
+        Button buttonAll = inflatedView.findViewById(R.id.btnAll);
+        buttonAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SetCountersAll();
+                SetChartData();
+                Log.d("debugger", "all: ");
+                theData = new BarData(barDataSet);
+                barChart.setData(theData);
+
+            }
+        });
+
         return inflatedView;
     }
 
     public void LastSevenDays(){
 
-        depressed = 0;
-        sad = 0;
-        neutral = 0;
-        happy = 0;
-        excited = 0;
-        entries =null;
 
-        String formatDate = "";
-        for(int c = 0; c < dateString.length();c++){
-            if(dateString.charAt(c)!='/') {
-                formatDate += dateString.charAt(c);
-            }
-        }
-        Log.d("debugger","date " + formatDate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH,-7);
 
-        entries = JournalTable.selectAll(db);
+        int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentYear = calendar.get(Calendar.YEAR);
+        dateString = currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate);
 
-
-        for (int i = 0; i < entries.size(); i++) {
-            Entry j = entries.get(i);
-            //Log.d("debugger", "item: "+ i + " mood: "+j.getmEntryMood());
-
-            String temp = j.getmEntryDate();
-            String format = "";
-            for(int c = 0; c < temp.length();c++){
-                if(temp.charAt(c)!='/') {
-                    format += temp.charAt(c);
-                }
-            }
-            int curr = Integer.parseInt(formatDate);
-            int tempD = Integer.parseInt(format);
-            if(tempD>=curr) {
-               // Log.d("debugger", "i: " + i + "format : " + format);
-                switch (j.getmEntryMood()){
-                    case 0: depressed++;
-                        break;
-                    case 1: sad++;
-                        break;
-                    case 2: neutral++;
-                        break;
-                    case 3: happy++;
-                        break;
-                    case 4: excited++;
-                        break;
-                }
-            }
-
-
-        }
-
-
-        //barChart.notifyDataSetChanged();
-        barChart.clear();
-        barEntries = new ArrayList<>();
-        barEntries.add(new BarEntry(0, depressed));
-        barEntries.add(new BarEntry(1, sad));
-        barEntries.add(new BarEntry(2, neutral));
-        barEntries.add(new BarEntry(3, happy));
-        barEntries.add(new BarEntry(4, excited));
-        barDataSet = new BarDataSet(barEntries, "");
-
-        barDataSet.setColors(ContextCompat.getColor(getContext(), android.R.color.holo_blue_dark),
-                ContextCompat.getColor(getContext(), android.R.color.holo_blue_light),
-                ContextCompat.getColor(getContext(), android.R.color.darker_gray),
-                ContextCompat.getColor(getContext(), android.R.color.holo_green_light),
-                ContextCompat.getColor(getContext(), android.R.color.holo_orange_light));
-        barChart.getLegend().setEnabled(false);
+        SetCounters();
+        SetChartData();
 
         //Log.d("debugger", "depressed: "+depressed);
         //Log.d("debugger", "sad: "+sad);
@@ -224,6 +206,22 @@ public class StatsFragment extends Fragment {
 
     public void selectedMonth(int month){
 
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH,month);
+        calendar.set(Calendar.DAY_OF_MONTH,1);
+
+        int currentDate = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentYear = calendar.get(Calendar.YEAR);
+        dateString = currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate);
+
+        SetCountersMonth();
+        SetChartData();
+    }
+
+    public void SetCounters(){
+
         depressed = 0;
         sad = 0;
         neutral = 0;
@@ -237,7 +235,7 @@ public class StatsFragment extends Fragment {
                 formatDate += dateString.charAt(c);
             }
         }
-        Log.d("debugger","date " + formatDate);
+       //Log.d("debugger","date " + formatDate);
 
         entries = JournalTable.selectAll(db);
 
@@ -270,11 +268,94 @@ public class StatsFragment extends Fragment {
                         break;
                 }
             }
-
-
         }
+    }
+
+    public void SetCountersMonth(){
+
+        depressed = 0;
+        sad = 0;
+        neutral = 0;
+        happy = 0;
+        excited = 0;
+        entries =null;
+
+        String formatDate = "";
+        for(int c = 0; c < dateString.length();c++){
+            if(dateString.charAt(c)!='/') {
+                formatDate += dateString.charAt(c);
+            }
+        }
+        Log.d("debugger","date " + formatDate);
+
+        entries = JournalTable.selectAll(db);
 
 
+        for (int i = 0; i < entries.size(); i++) {
+            Entry j = entries.get(i);
+            //Log.d("debugger", "item: "+ i + " mood: "+j.getmEntryMood());
+
+            String temp = j.getmEntryDate();
+            String format = "";
+            for(int c = 0; c < temp.length();c++){
+                if(temp.charAt(c)!='/') {
+                    format += temp.charAt(c);
+                }
+            }
+            int curr = Integer.parseInt(formatDate);
+            int tempD = Integer.parseInt(format);
+            if(tempD>=curr && tempD <= curr+30) {
+                 //Log.d("debugger", "i: " + i + "format : " + (tempD+30));
+                switch (j.getmEntryMood()){
+                    case 0: depressed++;
+                        break;
+                    case 1: sad++;
+                        break;
+                    case 2: neutral++;
+                        break;
+                    case 3: happy++;
+                        break;
+                    case 4: excited++;
+                        break;
+                }
+            }
+        }
+    }
+
+    public void SetCountersAll(){
+
+        depressed = 0;
+        sad = 0;
+        neutral = 0;
+        happy = 0;
+        excited = 0;
+        entries =null;
+
+        entries = JournalTable.selectAll(db);
+
+        for (int i = 0; i < entries.size(); i++) {
+            Entry j = entries.get(i);
+            switch (j.getmEntryMood()) {
+                case 0:
+                    depressed++;
+                    break;
+                case 1:
+                    sad++;
+                    break;
+                case 2:
+                    neutral++;
+                    break;
+                case 3:
+                    happy++;
+                    break;
+                case 4:
+                    excited++;
+                    break;
+            }
+        }
+    }
+
+    public void SetChartData(){
         //barChart.notifyDataSetChanged();
         barChart.clear();
         barEntries = new ArrayList<>();
@@ -291,11 +372,5 @@ public class StatsFragment extends Fragment {
                 ContextCompat.getColor(getContext(), android.R.color.holo_green_light),
                 ContextCompat.getColor(getContext(), android.R.color.holo_orange_light));
         barChart.getLegend().setEnabled(false);
-
-        //Log.d("debugger", "depressed: "+depressed);
-        //Log.d("debugger", "sad: "+sad);
-        //Log.d("debugger", "Neutral: "+neutral);
-        //Log.d("debugger", "happy: "+happy);
-        //Log.d("debugger", "excited: "+excited);
     }
 }

@@ -18,11 +18,15 @@
 
     <TextView
         android:id="@+id/lblEntry"
-        android:layout_width="310dp"
+        android:layout_width="268dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="Entry"
+        app:layout_constraintEnd_toStartOf="@+id/lblMood"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblTitle" />
 
@@ -49,5 +53,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblTime"
         app:srcCompat="@drawable/neutral_face" />
+
+    <ImageView
+        android:id="@+id/lblImage"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/lblMood"
+        app:layout_constraintTop_toBottomOf="@+id/lblTime" />
 
 </android.support.constraint.ConstraintLayout>

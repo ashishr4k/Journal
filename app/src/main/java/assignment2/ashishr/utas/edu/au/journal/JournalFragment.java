@@ -11,20 +11,25 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabItem;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -33,11 +38,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -96,6 +104,17 @@ public class JournalFragment extends Fragment {
         datestr = currentYear+"/"+String.format("%02d",currentMonth+1)+"/"+String.format("%02d",currentDate);
         date.setText(datestr);//month start from 0 to 11,so month should+1
         entries = JournalTable.selectByDate(db,date.getText().toString());//++++ruihao
+
+        Date chosenDate = calendar.getTime();
+
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM");
+        String dispDateString = format.format(chosenDate);
+
+        TextView displayDate = inflatedView.findViewById(R.id.disDateText);
+        displayDate.setText(dispDateString);
+
+        //Log.d("debugger",""+currentDate);
+        //Log.d("debugger",""+);
 
         //show all the data
         //entries = JournalTable.selectAll(db);
@@ -194,6 +213,19 @@ public class JournalFragment extends Fragment {
                             {
                                 datestr = year+"/"+String.format("%02d",(month+1))+"/"+String.format("%02d",dayOfMonth);
                                 date.setText(datestr);//month start from 0 to 11,so month should+1
+
+
+
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTimeInMillis(0);
+                                cal.set(year, month, dayOfMonth, 0, 0, 0);
+                                Date chosenDate = cal.getTime();
+
+                                SimpleDateFormat format = new SimpleDateFormat("dd MMM");
+                                String dispDateString = format.format(chosenDate);
+
+                                TextView displayDate = inflatedView.findViewById(R.id.disDateText);
+                                displayDate.setText(dispDateString);
 
                                 /*
                                 entries = JournalTable.selectByDate(db,datestr);
@@ -367,6 +399,42 @@ public class JournalFragment extends Fragment {
                         });
                     }
                 }
+            }
+        });
+        final TextView search = inflatedView.findViewById(R.id.searchText);
+
+        final Button btnSearch = inflatedView.findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search.setVisibility(View.VISIBLE);
+                btnSearch.setVisibility(View.GONE);
+
+            }
+        });
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    //Log.d("debugger",s+"");
+                    entryListAdapter.getFilter().filter(s.toString());
+                    if(s.toString().isEmpty()){
+                        btnSearch.setVisibility(View.VISIBLE);
+                        search.setVisibility(View.GONE);
+                    }else{
+                        btnSearch.setVisibility(View.GONE);
+                        search.setVisibility(View.VISIBLE);
+                    }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
