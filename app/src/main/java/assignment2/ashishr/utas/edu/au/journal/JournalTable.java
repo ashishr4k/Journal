@@ -18,6 +18,7 @@ public class JournalTable {
     public static final String ENTRY_MOOD = "mood";
     public static final String ENTRY_IMAGE = "imageUri";
 
+
     public static final String CREATE_STATEMENT = "CREATE TABLE "
             + TABLE_NAME
             + " (" + ENTRY_ID + " integer primary key autoincrement, "

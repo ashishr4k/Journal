@@ -29,7 +29,7 @@ public class MoodAdapter extends ArrayAdapter<Integer> {
     private View getImageForPosition(int position) {
         ImageView imageView = new ImageView(getContext());
         imageView.setBackgroundResource(images[position]);
-        imageView.setLayoutParams(new AbsListView.LayoutParams(100, 100));
+        imageView.setLayoutParams(new AbsListView.LayoutParams(150, 150));
         return imageView;
     }
     public String getMood(int pos){

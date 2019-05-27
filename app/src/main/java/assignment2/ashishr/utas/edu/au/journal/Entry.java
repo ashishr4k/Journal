@@ -8,6 +8,7 @@ public class Entry {
     private String mEntryTime;
     private int mEntryMood;
     private String mEntryImage;
+    private String mEntryLocation;
 
     public int getmEntryID(){ return mEntryID; }
     public void setEntryID(int id){this.mEntryID = id;}
@@ -33,4 +34,7 @@ public class Entry {
     public void setmEntryImage(String mEntryImage) {
         this.mEntryImage = mEntryImage;
     }
+
+    public String getmEntryLocation(){return  mEntryLocation;}
+    public void setmEntryLocation(String mEntryLocation){this.mEntryLocation = mEntryLocation;}
 }

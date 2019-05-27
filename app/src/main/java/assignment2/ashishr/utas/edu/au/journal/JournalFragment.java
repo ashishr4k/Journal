@@ -325,6 +325,8 @@ public class JournalFragment extends Fragment {
                 inflatedView.findViewById(R.id.helpEntries).setVisibility(View.GONE);
                 Camera();
                 imageView.setImageBitmap(null);
+                EditText location = inflatedView.findViewById(R.id.inputLocation);
+                location.setText("");
                 if (fm == null) {
                     //Log.d("FOUND", "NULL");
                 } else {
@@ -356,6 +358,7 @@ public class JournalFragment extends Fragment {
 
                         EditText t1 = (EditText) inflatedView.findViewById(R.id.inputText);
                         EditText t2 = (EditText) inflatedView.findViewById(R.id.inputTitle);
+
                         t1.setText("");
                         t2.setText("");
                         imageURI = "";
